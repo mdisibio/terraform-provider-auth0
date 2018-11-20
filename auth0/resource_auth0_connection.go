@@ -116,6 +116,10 @@ func newConnection() *schema.Resource {
 							Type:     schema.TypeBool,
 							Optional: true,
 						},
+						"ext_nested_groups": {
+							Type:     schema.TypeBool,
+							Optional: true,
+						},
 						"ext_assigned_plans": {
 							Type:     schema.TypeBool,
 							Optional: true,
@@ -157,6 +161,34 @@ func newConnection() *schema.Resource {
 							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
 								return strings.HasPrefix(old, "2.0$") || new == old
 							},
+						},
+						"tenant_domain": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"client_id": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"client_secret": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"domain": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"waad_protocol": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"waad_common_endpoint": {
+							Type:     schema.TypeBool,
+							Optional: true,
+						},
+						"max_groups_to_retrieve": {
+							Type:     schema.TypeString,
+							Optional: true,
 						},
 					},
 				},
@@ -208,6 +240,7 @@ func readConnection(d *schema.ResourceData, m interface{}) error {
 			"ext_is_suspended":               auth0.BoolValue(c.Options.ExtIsSuspended),
 			"ext_agreed_terms":               auth0.BoolValue(c.Options.ExtAgreedTerms),
 			"ext_groups":                     auth0.BoolValue(c.Options.ExtGroups),
+			"ext_nested_groups":              auth0.BoolValue(c.Options.ExtNestedGroups),
 			"ext_assigned_plans":             auth0.BoolValue(c.Options.ExtAssignedPlans),
 			"ext_profile":                    auth0.BoolValue(c.Options.ExtProfile),
 			"enabled_database_customization": auth0.BoolValue(c.Options.EnabledDatabaseCustomization),
@@ -217,6 +250,12 @@ func readConnection(d *schema.ResourceData, m interface{}) error {
 			"requires_username":              auth0.BoolValue(c.Options.RequiresUsername),
 			"custom_scripts":                 c.Options.CustomScripts,
 			"configuration":                  c.Options.Configuration,
+			"tenant_domain":                  c.Options.TenantDomain,
+			"client_id":                      c.Options.ClientID,
+			"client_secret":                  c.Options.ClientSecret,
+			"waad_protocol":                  c.Options.WaadProtocol,
+			"waad_common_endpoint":           c.Options.WaadCommonEndpoint,
+			"max_groups_to_retrieve":         c.Options.MaxGroupsToRetrieve,
 		},
 	})
 
@@ -270,6 +309,7 @@ func buildConnection(d *schema.ResourceData) *management.Connection {
 					ExtIsSuspended:               auth0.Bool(options["ext_is_suspended"].(bool)),
 					ExtAgreedTerms:               auth0.Bool(options["ext_agreed_terms"].(bool)),
 					ExtGroups:                    auth0.Bool(options["ext_groups"].(bool)),
+					ExtNestedGroups:              auth0.Bool(options["ext_nested_groups"].(bool)),
 					ExtAssignedPlans:             auth0.Bool(options["ext_assigned_plans"].(bool)),
 					ExtProfile:                   auth0.Bool(options["ext_profile"].(bool)),
 					EnabledDatabaseCustomization: auth0.Bool(options["enabled_database_customization"].(bool)),
@@ -279,6 +319,12 @@ func buildConnection(d *schema.ResourceData) *management.Connection {
 					RequiresUsername:             auth0.Bool(options["requires_username"].(bool)),
 					CustomScripts:                options["custom_scripts"].(map[string]interface{}),
 					Configuration:                options["configuration"].(map[string]interface{}),
+					TenantDomain:                 auth0.String(options["tenant_domain"].(string)),
+					ClientID:                     auth0.String(options["client_id"].(string)),
+					ClientSecret:                 auth0.String(options["client_secret"].(string)),
+					MaxGroupsToRetrieve:          auth0.String(options["max_groups_to_retrieve"].(string)),
+					WaadProtocol:                 auth0.String(options["waad_protocol"].(string)),
+					WaadCommonEndpoint:           auth0.Bool(options["waad_common_endpoint"].(bool)),
 				}
 			}
 		}
